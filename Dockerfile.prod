@@ -9,7 +9,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 # Install Dependencies
 COPY ./package.json ./
-RUN npm --upgrade
+RUN npm upgrade
 RUN npm install yarn
 RUN yarn install
 COPY . ./

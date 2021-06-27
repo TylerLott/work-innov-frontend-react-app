@@ -34,7 +34,7 @@ const Table = () => {
     if (preview) {
       const formData = new FormData()
       formData.append("file", image)
-      fetch("/api/image_upload", {
+      fetch("/work-innov/api/image_upload", {
         method: "POST",
         body: formData,
       })

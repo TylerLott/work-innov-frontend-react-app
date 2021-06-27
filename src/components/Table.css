@@ -5,6 +5,10 @@ td {
   border-collapse: collapse;
 }
 
+table {
+  width: 90vw;
+}
+
 .user-image-container {
   margin: 0 auto;
   width: 90%;

@@ -21,7 +21,7 @@ const Table = () => {
 
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl)
-  }, [image])
+  }, [image, exURL])
 
   const getData = (e) => {
     if (e.target.files[0]) {
@@ -80,6 +80,18 @@ const Table = () => {
     console.log(tableData)
   }
 
+  const copyTable = () => {
+    let copy_table = ""
+    for (let i = 0; i < tableData.length; i++) {
+      for (let j = 0; j < tableData[i].length; j++) {
+        copy_table += tableData[i][j][0] + "\t"
+      }
+      copy_table += "\n"
+    }
+    console.log(copy_table)
+    navigator.clipboard.writeText(copy_table)
+  }
+
   return (
     <div className="upload-component">
       <div className="info-container">
@@ -126,25 +138,29 @@ const Table = () => {
               return (
                 <tr key={i}>
                   {row.map((data, ind) => {
-                    let bkg = "#ffff66"
-                    if (parseInt(data[1]) > 80) {
-                      bkg = "#90EE90"
+                    const goodCellThresh = 80
+                    let bkg = "#ffff66" //yellow for changed cells
+                    if (parseInt(data[1]) > goodCellThresh) {
+                      bkg = "#90EE90" //green for sure cells
                     } else if (parseInt(data[1]) >= 0) {
-                      bkg = "#FFB6C1"
+                      bkg = "#FFB6C1" //red for unsure cells
                     } else if (parseInt(data[1]) === -2) {
-                      bkg = "#ADD8E6"
+                      bkg = "#ADD8E6" //blue for empty cells (-2 is returned from server if it thinks cell is empty)
                     }
+
                     return (
-                      <input
-                        className="table-in"
-                        style={{
-                          width: `calc(100% / ${row.length + 1})`,
-                          background: bkg,
-                        }}
-                        key={ind}
-                        onChange={(e) => entryChange(i, ind, e)}
-                        defaultValue={data[0]}
-                      />
+                      <td>
+                        <input
+                          className="table-in"
+                          style={{
+                            width: `calc(90vw / ${row.length + 1})`,
+                            background: bkg,
+                          }}
+                          key={ind}
+                          onInput={(e) => entryChange(i, ind, e)}
+                          defaultValue={data[0]}
+                        />
+                      </td>
                     )
                   })}
                 </tr>
@@ -155,6 +171,11 @@ const Table = () => {
           )}
         </tbody>
       </table>
+      {!isImageLoading ? (
+        <button onClick={copyTable}>Copy Table</button>
+      ) : (
+        <></>
+      )}
       <p>Contact tyler.lott@ngc.com for questions</p>
     </div>
   )

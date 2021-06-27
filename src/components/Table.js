@@ -14,9 +14,9 @@ const Table = () => {
     }
 
     const objectUrl =
-      image !== "/api/example_image"
+      image !== process.env.PUBLIC_URL + "/api/example_image"
         ? URL.createObjectURL(image)
-        : "/api/example_image"
+        : process.env.PUBLIC_URL + "/api/example_image"
 
     setPreview(objectUrl)
 
@@ -36,16 +36,16 @@ const Table = () => {
   }
 
   const loadExample = () => {
-    setImage("/api/example_image")
-    setPreview("/api/example_image")
+    setImage(process.env.PUBLIC_URL + "/api/example_image")
+    setPreview(process.env.PUBLIC_URL + "/api/example_image")
   }
 
   async function upload_image() {
     if (preview) {
       setIsImageLoading(1)
       const formData = new FormData()
-      if (image === "/api/example_image") {
-        const res = await fetch("/api/example_image")
+      if (image === process.env.PUBLIC_URL + "/api/example_image") {
+        const res = await fetch(process.env.PUBLIC_URL + "/api/example_image")
         const res2 = await res.blob()
         await formData.append("file", res2)
         await fetch("/api/image_upload", {

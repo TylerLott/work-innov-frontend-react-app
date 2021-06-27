@@ -5,6 +5,7 @@ const Table = () => {
   const [tableData, setTableData] = useState([])
   const [image, setImage] = useState()
   const [preview, setPreview] = useState()
+  const [isImageLoading, setIsImageLoading] = useState(0)
 
   useEffect(() => {
     if (!image) {
@@ -12,7 +13,11 @@ const Table = () => {
       return
     }
 
-    const objectUrl = URL.createObjectURL(image)
+    const objectUrl =
+      image !== "/api/example_image"
+        ? URL.createObjectURL(image)
+        : "/api/example_image"
+
     setPreview(objectUrl)
 
     // free memory when ever this component is unmounted
@@ -30,19 +35,49 @@ const Table = () => {
     }
   }
 
-  function upload_image() {
+  const loadExample = () => {
+    setImage("/api/example_image")
+    setPreview("/api/example_image")
+  }
+
+  async function upload_image() {
     if (preview) {
+      setIsImageLoading(1)
       const formData = new FormData()
-      formData.append("file", image)
-      fetch("/api/image_upload", {
-        method: "POST",
-        body: formData,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setTableData(data)
+      if (image === "/api/example_image") {
+        const res = await fetch("/api/example_image")
+        const res2 = await res.blob()
+        await formData.append("file", res2)
+        await fetch("/api/image_upload", {
+          method: "POST",
+          body: formData,
         })
+          .then((res) => res.json())
+          .then((data) => {
+            setIsImageLoading(0)
+            setTableData(data)
+            console.log(data)
+          })
+      } else {
+        formData.append("file", image)
+        fetch("/api/image_upload", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setIsImageLoading(0)
+            setTableData(data)
+          })
+      }
     }
+  }
+
+  const entryChange = (i, j, e) => {
+    let temp = [...tableData]
+    temp[i][j] = [e.target.value, -1]
+    setTableData(temp)
+    console.log(tableData)
   }
 
   return (
@@ -57,23 +92,62 @@ const Table = () => {
           Upload
         </button>
         <input id="profilePic" type="file" onChange={getData} />
+        <button className="upload-button" onClick={loadExample}>
+          Load Example Image
+        </button>
         <h1>IMAGE STAGED FOR UPLOAD:</h1>
       </div>
+
       <div className="user-image-container">
         {image && <img className="user-image" src={preview} alt="user_img" />}
       </div>
       <h1>EXTRACTED TABLE:</h1>
+      {isImageLoading ? (
+        <div className="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      ) : (
+        <></>
+      )}
       <table className="user-table">
         <tbody className="user-table">
-          {tableData.map((row, i) => {
-            return (
-              <tr key={i}>
-                {row.map((data, ind) => {
-                  return <td key={ind}>{data}</td>
-                })}
-              </tr>
-            )
-          })}
+          {!isImageLoading ? (
+            tableData.map((row, i) => {
+              return (
+                <tr key={i}>
+                  {row.map((data, ind) => {
+                    let bkg = "#ffff66"
+                    if (data[1] > 80) {
+                      bkg = "#90EE90"
+                    } else if (data[1] > 0) {
+                      bkg = "#FFB6C1"
+                    }
+                    return (
+                      <input
+                        className="table-in"
+                        style={{
+                          width: `calc(100% / ${row.length + 1})`,
+                          background: bkg,
+                        }}
+                        key={ind}
+                        onChange={(e) => entryChange(i, ind, e)}
+                        defaultValue={data[0]}
+                      />
+                    )
+                  })}
+                </tr>
+              )
+            })
+          ) : (
+            <></>
+          )}
         </tbody>
       </table>
       <p>Contact tyler.lott@ngc.com for questions</p>

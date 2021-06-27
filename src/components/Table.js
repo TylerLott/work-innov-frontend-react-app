@@ -85,7 +85,10 @@ const Table = () => {
         <p className="upload-p">
           The 'Upload' button below sends the image your upload below to the
           REST server, which processes the image through it's OCR engine and
-          returns the extracted table
+          returns the extracted table.
+        </p>
+        <p className="upload-p">
+          (The example image takes around 30 seconds to process)
         </p>
         <button className="upload-button" onClick={upload_image}>
           Upload

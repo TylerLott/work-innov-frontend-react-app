@@ -6,6 +6,8 @@ const Table = () => {
   const [image, setImage] = useState()
   const [preview, setPreview] = useState()
   const [isImageLoading, setIsImageLoading] = useState(0)
+  const exURL = process.env.PUBLIC_URL + "/api/example_image"
+  const uploadURL = process.env.PUBLIC_URL + "/api/image_upload"
 
   useEffect(() => {
     if (!image) {
@@ -13,10 +15,7 @@ const Table = () => {
       return
     }
 
-    const objectUrl =
-      image !== process.env.PUBLIC_URL + "/api/example_image"
-        ? URL.createObjectURL(image)
-        : process.env.PUBLIC_URL + "/api/example_image"
+    const objectUrl = image !== exURL ? URL.createObjectURL(image) : exURL
 
     setPreview(objectUrl)
 
@@ -36,19 +35,19 @@ const Table = () => {
   }
 
   const loadExample = () => {
-    setImage(process.env.PUBLIC_URL + "/api/example_image")
-    setPreview(process.env.PUBLIC_URL + "/api/example_image")
+    setImage(exURL)
+    setPreview(exURL)
   }
 
   async function upload_image() {
     if (preview) {
       setIsImageLoading(1)
       const formData = new FormData()
-      if (image === process.env.PUBLIC_URL + "/api/example_image") {
-        const res = await fetch(process.env.PUBLIC_URL + "/api/example_image")
+      if (image === exURL) {
+        const res = await fetch(exURL)
         const res2 = await res.blob()
         await formData.append("file", res2)
-        await fetch("/api/image_upload", {
+        await fetch(uploadURL, {
           method: "POST",
           body: formData,
         })
@@ -60,7 +59,7 @@ const Table = () => {
           })
       } else {
         formData.append("file", image)
-        fetch("/api/image_upload", {
+        fetch(uploadURL, {
           method: "POST",
           body: formData,
         })
@@ -92,7 +91,7 @@ const Table = () => {
           Upload
         </button>
         <input id="profilePic" type="file" onChange={getData} />
-        <button className="upload-button" onClick={loadExample}>
+        <button className="example-button" onClick={loadExample}>
           Load Example Image
         </button>
         <h1>IMAGE STAGED FOR UPLOAD:</h1>

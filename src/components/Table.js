@@ -42,6 +42,7 @@ const Table = () => {
   async function upload_image() {
     if (preview) {
       setIsImageLoading(1)
+      setTableData([])
       const formData = new FormData()
       if (image === exURL) {
         const res = await fetch(exURL)
@@ -126,10 +127,12 @@ const Table = () => {
                 <tr key={i}>
                   {row.map((data, ind) => {
                     let bkg = "#ffff66"
-                    if (data[1] > 80) {
+                    if (parseInt(data[1]) > 80) {
                       bkg = "#90EE90"
-                    } else if (data[1] > 0) {
+                    } else if (parseInt(data[1]) >= 0) {
                       bkg = "#FFB6C1"
+                    } else if (parseInt(data[1]) === -2) {
+                      bkg = "#ADD8E6"
                     }
                     return (
                       <input

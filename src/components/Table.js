@@ -56,7 +56,6 @@ const Table = () => {
           .then((data) => {
             setIsImageLoading(0)
             setTableData(data)
-            console.log(data)
           })
       } else {
         formData.append("file", image)
@@ -88,7 +87,6 @@ const Table = () => {
       }
       copy_table += "\n"
     }
-    console.log(copy_table)
     navigator.clipboard.writeText(copy_table)
   }
 
